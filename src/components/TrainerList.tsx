@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography } from '@mui/material';
+import { Container, Typography, Button } from '@mui/material';
 
 interface Trainer {
     id: number;
@@ -44,16 +44,18 @@ const TrainerList: React.FC = () => {
                 <ul>
                     {trainers.map(trainer => (
                         <li key={trainer.id}>
-                            <Typography variant="h6">{trainer.firstname} {trainer.surname}</Typography>
+                            <Typography variant="h6">
+                                {trainer.firstname} {trainer.surname}
+                            </Typography>
                         </li>
                     ))}
                 </ul>
             )}
             <div>
                 <span>Elements: {trainers.length}</span>
-                <button onClick={prevPage} disabled={currentPage === 1}>Previous Page</button>
+                <Button onClick={prevPage} disabled={currentPage === 1}>Previous Page</Button>
                 <span>Page: {currentPage}</span>
-                <button onClick={nextPage}>Next Page</button>
+                <Button onClick={nextPage}>Next Page</Button>
             </div>
         </Container>
     );
