@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Typography, Button } from '@mui/material';
+import React, {useEffect, useState} from 'react';
+import {Button, Container, Typography} from '@mui/material';
+import {Link} from "react-router-dom";
 
 interface Trainer {
     id: number;
@@ -10,9 +11,14 @@ interface Trainer {
     trophies: number[];
 }
 
+interface Pageable {
+    pageNumber: number;
+}
+
 const TrainerList: React.FC = () => {
     const [trainers, setTrainers] = useState<Trainer[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -23,8 +29,9 @@ const TrainerList: React.FC = () => {
         try {
             const response = await fetch(`http://localhost:8080/api/trainers?page=${currentPage}`);
             const data = await response.json();
-            setTrainers(data.content); // Access the 'content' property
-            setLoading(false); // Set loading to false after data is fetched
+            setTrainers(data.content);
+            setTotalPages(data.totalPages);
+            setLoading(false);
         } catch (error) {
             console.error('Error fetching trainers:', error);
         }
@@ -38,6 +45,7 @@ const TrainerList: React.FC = () => {
             <Typography variant="h4" gutterBottom>
                 Trainer List
             </Typography>
+            <Link to="/add-trainer">Add Trainer</Link>
             {loading ? (
                 <div>Loading...</div>
             ) : (
@@ -52,10 +60,9 @@ const TrainerList: React.FC = () => {
                 </ul>
             )}
             <div>
-                <span>Elements: {trainers.length}</span>
                 <Button onClick={prevPage} disabled={currentPage === 1}>Previous Page</Button>
-                <span>Page: {currentPage}</span>
-                <Button onClick={nextPage}>Next Page</Button>
+                <span>Page: {currentPage}/{totalPages}</span>
+                <Button onClick={nextPage} disabled={currentPage === totalPages}>Next Page</Button>
             </div>
         </Container>
     );
