@@ -68,7 +68,6 @@ const AddTrainer: React.FC = () => {
                 />
                 <Button onClick={handleAddTrainer} variant="contained" color="primary">Add Trainer</Button>
                 <Button onClick={handleCancel} variant="contained" color="primary">Cancel</Button>
-                <Button onClick={() => navigate('/trainers')} variant="contained" color="primary">Cancel</Button>
             </div>
         </Container>
     );

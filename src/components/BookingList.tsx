@@ -1,22 +1,21 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Container, Typography} from '@mui/material';
-import {Link, useNavigate} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Button, Container, Typography } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
 
-interface Trainer {
-    id: number;
-    firstname: string;
-    surname: string;
-    facilityIds: number[];
-    specialisations: number[];
-    trophies: number[];
+interface Booking {
+    bookid: number;
+    facid: number;
+    memid: number;
+    starttime: string;
+    slots: number;
 }
 
 interface Pageable {
     pageNumber: number;
 }
 
-const TrainerList: React.FC = () => {
-    const [trainers, setTrainers] = useState<Trainer[]>([]);
+const BookingList: React.FC = () => {
+    const [bookings, setBookings] = useState<Booking[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
@@ -24,18 +23,18 @@ const TrainerList: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchTrainers();
+        fetchBookings();
     }, [currentPage]);
 
-    const fetchTrainers = async () => {
+    const fetchBookings = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/trainers?page=${currentPage}`);
+            const response = await fetch(`http://localhost:8080/api/bookings?page=${currentPage}`);
             const data = await response.json();
-            setTrainers(data.content);
+            setBookings(data.content);
             setTotalPages(data.totalPages);
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching trainers:', error);
+            console.error('Error fetching bookings:', error);
         }
     };
 
@@ -45,20 +44,19 @@ const TrainerList: React.FC = () => {
     return (
         <Container>
             <Typography variant="h4" gutterBottom>
-                Trainer List
+                Booking List
             </Typography>
-            <Link to="/add-trainer">Add Trainer</Link>
+            <Link to="/add-booking">Add Booking</Link>
             {loading ? (
                 <div>Loading...</div>
             ) : (
                 <ul>
-                    {trainers.map(trainer => (
-                        <li key={trainer.id} style={{display: 'flex', alignItems: 'center'}}>
-                            <span style={{marginRight: '8px'}}>•</span>
+                    {bookings.map(booking => (
+                        <li key={booking.bookid} style={{ display: 'flex', alignItems: 'center' }}>
+                            <span style={{ marginRight: '8px' }}>•</span>
                             <Button onClick={() => {
-                                navigate(`/trainer/${trainer.id}`)
-                            }}> {trainer.firstname} {trainer.surname}</Button>
-
+                                navigate(`/booking/${booking.bookid}`)
+                            }}>{booking.starttime}</Button>
                         </li>
                     ))}
                 </ul>
@@ -72,4 +70,4 @@ const TrainerList: React.FC = () => {
     );
 };
 
-export default TrainerList;
+export default BookingList;

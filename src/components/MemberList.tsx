@@ -1,22 +1,24 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Container, Typography} from '@mui/material';
-import {Link, useNavigate} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Button, Container, Typography } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
 
-interface Trainer {
-    id: number;
-    firstname: string;
+interface Member {
+    memid: number;
     surname: string;
-    facilityIds: number[];
-    specialisations: number[];
-    trophies: number[];
+    firstname: string;
+    address: string;
+    zipcode: string;
+    telephone: string;
+    recommendedby: number;
+    joindate: string;
 }
 
 interface Pageable {
     pageNumber: number;
 }
 
-const TrainerList: React.FC = () => {
-    const [trainers, setTrainers] = useState<Trainer[]>([]);
+const MemberList: React.FC = () => {
+    const [members, setMembers] = useState<Member[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
@@ -24,18 +26,18 @@ const TrainerList: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchTrainers();
+        fetchMembers();
     }, [currentPage]);
 
-    const fetchTrainers = async () => {
+    const fetchMembers = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/trainers?page=${currentPage}`);
+            const response = await fetch(`http://localhost:8080/api/members?page=${currentPage}`);
             const data = await response.json();
-            setTrainers(data.content);
+            setMembers(data.content);
             setTotalPages(data.totalPages);
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching trainers:', error);
+            console.error('Error fetching members:', error);
         }
     };
 
@@ -45,20 +47,19 @@ const TrainerList: React.FC = () => {
     return (
         <Container>
             <Typography variant="h4" gutterBottom>
-                Trainer List
+                Member List
             </Typography>
-            <Link to="/add-trainer">Add Trainer</Link>
+            <Link to="/add-member">Add Member</Link>
             {loading ? (
                 <div>Loading...</div>
             ) : (
                 <ul>
-                    {trainers.map(trainer => (
-                        <li key={trainer.id} style={{display: 'flex', alignItems: 'center'}}>
-                            <span style={{marginRight: '8px'}}>•</span>
+                    {members.map(member => (
+                        <li key={member.memid} style={{ display: 'flex', alignItems: 'center' }}>
+                            <span style={{ marginRight: '8px' }}>•</span>
                             <Button onClick={() => {
-                                navigate(`/trainer/${trainer.id}`)
-                            }}> {trainer.firstname} {trainer.surname}</Button>
-
+                                navigate(`/member/${member.memid}`)
+                            }}>{member.firstname} {member.surname}</Button>
                         </li>
                     ))}
                 </ul>
@@ -72,4 +73,4 @@ const TrainerList: React.FC = () => {
     );
 };
 
-export default TrainerList;
+export default MemberList;
