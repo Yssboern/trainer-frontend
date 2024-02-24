@@ -17,7 +17,7 @@ interface Trainer {
     trophies: IdName[];
 }
 
-interface EditedTrainer {
+interface TrainerSaveData {
     id: number;
     firstname: string;
     surname: string;
@@ -26,7 +26,7 @@ interface EditedTrainer {
     trophies: number[];
 }
 
-const convertToEditedTrainer = (trainer: Trainer): EditedTrainer => {
+const convertToTrainerSaveData = (trainer: Trainer): TrainerSaveData => {
     const facilityIds = trainer.facilities ? trainer.facilities.map(item => item.id) : [];
     const specialisations = trainer.skills ? trainer.skills.map(item => item.id) : [];
     const trophies = trainer.trophies ? trainer.trophies.map(item => item.id) : [];
@@ -46,7 +46,7 @@ const TrainerDetails: React.FC = () => {
     const [trainer, setTrainer] = useState<Trainer | null>(null);
     const [loading, setLoading] = useState(true);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [editedTrainer, setEditedTrainer] = useState<EditedTrainer | null>(null); // State to hold edited trainer data
+    const [editedTrainer, setEditedTrainer] = useState<Trainer | null>(null); // State to hold edited trainer data
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -55,8 +55,7 @@ const TrainerDetails: React.FC = () => {
                 const response = await fetch(`http://localhost:8080/api/trainers/${id}`);
                 const data = await response.json();
                 setTrainer(data);
-
-                setEditedTrainer(convertToEditedTrainer(data)); // Initialize edited trainer with fetched data
+                setEditedTrainer(data);
                 setLoading(false);
                 console.log(data)
             } catch (error) {
@@ -70,48 +69,55 @@ const TrainerDetails: React.FC = () => {
         navigate('/trainers');
     };
 
-    const handleTrainingSelect = (trainingId: number) => {
+    const handleTrainingSelect = (trainig: IdName) => {
         if (editedTrainer) {
             const updatedTrainer = {...editedTrainer};
-            // Check if editedTrainer.specialisations is defined before accessing it
-            if (editedTrainer && editedTrainer.specialisations && !editedTrainer.specialisations.includes(trainingId)) {
-                updatedTrainer.specialisations.push(trainingId);
+            if (updatedTrainer && updatedTrainer.skills) {
+                const isDuplicate = updatedTrainer.skills.some(skill => skill.id === trainig.id);
+                if (!isDuplicate) {
+                    updatedTrainer.skills.push(trainig);
+                    setEditedTrainer(updatedTrainer);
+                    console.log(updatedTrainer);
+                } else {
+                    console.log("Training already exists in the skills array.");
+                }
             }
-            setEditedTrainer(updatedTrainer);
         }
-        console.log(editedTrainer);
     };
+
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = event.target;
 
         // Check if the property is an array
         if (name === 'facilityIds' || name === 'specialisations' || name === 'trophies') {
             // Parse input value to a number and split by commas to create an array
-            const parsedValue = value.split(',').map(Number);
-            setEditedTrainer((prevState: EditedTrainer | null) => ({
-                ...(prevState as EditedTrainer),
+            const parsedValue = value ? value.split(',').map(Number) : [];
+            setEditedTrainer((prevState: Trainer | null) => ({
+                ...(prevState as Trainer),
                 [name]: parsedValue
             }));
         } else {
             // For string properties, directly assign the value
-            setEditedTrainer((prevState: EditedTrainer | null) => ({
-                ...(prevState as EditedTrainer),
+            setEditedTrainer((prevState: Trainer | null) => ({
+                ...(prevState as Trainer),
                 [name]: value
             }));
         }
     };
 
+
     const handleSave = async () => {
-        if (editedTrainer) {
-            console.log("Edited Trainer:", editedTrainer);
+        const trainerSaveData = editedTrainer ? convertToTrainerSaveData(editedTrainer) : null
+        if (trainerSaveData) {
+            console.log("Edited Trainer:", trainerSaveData);
 
             try {
-                const response = await fetch(`http://localhost:8080/api/trainers/${editedTrainer.id}`, {
+                const response = await fetch(`http://localhost:8080/api/trainers/${trainerSaveData.id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(editedTrainer)
+                    body: JSON.stringify(trainerSaveData)
                 });
 
                 if (response.ok) {

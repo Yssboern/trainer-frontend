@@ -1,5 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle, List, ListItem, ListItemText} from '@mui/material';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    List,
+    ListItemButton,
+    ListItemText
+} from '@mui/material';
 
 interface Training {
     id: number;
@@ -9,7 +18,7 @@ interface Training {
 interface Props {
     open: boolean;
     onClose: () => void;
-    onTrainingSelect: (trainingId: number) => void;
+    onTrainingSelect: (training: Training) => void;
 }
 
 const TrainingSelectionPopup: React.FC<Props> = ({open, onClose, onTrainingSelect}) => {
@@ -47,8 +56,8 @@ const TrainingSelectionPopup: React.FC<Props> = ({open, onClose, onTrainingSelec
     }
 
 
-    const handleTrainingSelect = (trainingId: number) => {
-        onTrainingSelect(trainingId);
+    const handleTrainingSelect = (training: Training) => {
+        onTrainingSelect(training);
         onClose();
     };
 
@@ -66,9 +75,9 @@ const TrainingSelectionPopup: React.FC<Props> = ({open, onClose, onTrainingSelec
             <DialogContent>
                 <List>
                     {trainings.map(training => (
-                        <ListItem key={training.id} button onClick={() => handleTrainingSelect(training.id)}>
+                        <ListItemButton key={training.id} onClick={() => handleTrainingSelect(training)}>
                             <ListItemText primary={training.name}/>
-                        </ListItem>
+                        </ListItemButton>
                     ))}
                 </List>
             </DialogContent>
