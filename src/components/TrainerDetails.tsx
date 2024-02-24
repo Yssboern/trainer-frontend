@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Container, TextField, Typography} from '@mui/material';
+import {Accordion, AccordionDetails, AccordionSummary, Button, Container, TextField, Typography} from '@mui/material';
 import {useNavigate, useParams} from 'react-router-dom';
 import TrainingSelectionPopup from './TrainingSelectionPopup';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 interface IdName {
     id: number;
@@ -167,30 +168,48 @@ const TrainerDetails: React.FC = () => {
                     onChange={handleInputChange}
                 />
             </div>
-            <ul>
-                Skills:
-                {trainer.skills && trainer.skills.map(skill => (
-                    <li key={skill.id} style={{display: 'flex', alignItems: 'center'}}>
-                        <span style={{marginRight: '8px'}}>• {skill.name} [{skill.id}]</span>
-                    </li>
-                ))}
-            </ul>
-            <ul>
-                Facilities:
-                {trainer.facilities && trainer.facilities.map(facility => (
-                    <li key={facility.id} style={{display: 'flex', alignItems: 'center'}}>
-                        <span style={{marginRight: '8px'}}>• {facility.name} [{facility.id}]</span>
-                    </li>
-                ))}
-            </ul>
-            <ul>
-                Trophies:
-                {trainer.trophies && trainer.trophies.map(trophy => (
-                    <li key={trophy.id} style={{display: 'flex', alignItems: 'center'}}>
-                        <span style={{marginRight: '8px'}}>• {trophy.name} [{trophy.id}]</span>
-                    </li>
-                ))}
-            </ul>
+            <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon/>} aria-controls="panel1a-content" id="panel1a-header">
+                    <Typography>Skills</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <ul>
+                        {trainer.skills && trainer.skills.map(skill => (
+                            <li key={skill.id} style={{display: 'flex', alignItems: 'center'}}>
+                                <span style={{marginRight: '8px'}}>• {skill.name} [{skill.id}]</span>
+                            </li>
+                        ))}
+                    </ul>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon/>} aria-controls="panel2a-content" id="panel2a-header">
+                    <Typography>Facilities</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <ul>
+                        {trainer.facilities && trainer.facilities.map(facility => (
+                            <li key={facility.id} style={{display: 'flex', alignItems: 'center'}}>
+                                <span style={{marginRight: '8px'}}>• {facility.name} [{facility.id}]</span>
+                            </li>
+                        ))}
+                    </ul>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon/>} aria-controls="panel3a-content" id="panel3a-header">
+                    <Typography>Trophies</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <ul>
+                        {trainer.trophies && trainer.trophies.map(trophy => (
+                            <li key={trophy.id} style={{display: 'flex', alignItems: 'center'}}>
+                                <span style={{marginRight: '8px'}}>• {trophy.name} [{trophy.id}]</span>
+                            </li>
+                        ))}
+                    </ul>
+                </AccordionDetails>
+            </Accordion>
             <Button onClick={handleCancel} variant="contained" color="primary">Cancel</Button>
             <Button variant="contained" color="primary" onClick={() => setIsPopupOpen(true)}>Add Skill</Button>
             <TrainingSelectionPopup
