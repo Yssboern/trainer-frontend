@@ -1,0 +1,90 @@
+import React, {useEffect, useState} from 'react';
+import {Button, Dialog, DialogActions, DialogContent, DialogTitle, List, ListItem, ListItemText} from '@mui/material';
+
+interface Training {
+    id: number;
+    name: string;
+}
+
+interface Props {
+    open: boolean;
+    onClose: () => void;
+    onTrainingSelect: (trainingId: number) => void;
+}
+
+const TrainingSelectionPopup: React.FC<Props> = ({open, onClose, onTrainingSelect}) => {
+    const [trainings, setTrainings] = useState<Training[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    useEffect(() => {
+        fetchTrainings();
+    }, [currentPage]);
+
+    const fetchTrainings = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(`http://localhost:8080/api/trainings?page=${currentPage}`);
+            const data = await response.json();
+            setTrainings(data.content);
+            setTotalPages(data.totalPages); // Update totalPages from incoming data
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching trainings:', error);
+            setError('Failed to fetch trainings');
+            setLoading(false);
+        }
+    };
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
+
+    const handleTrainingSelect = (trainingId: number) => {
+        onTrainingSelect(trainingId);
+        onClose();
+    };
+
+    const handlePrevPage = () => {
+        setCurrentPage(currentPage - 1);
+    };
+
+    const handleNextPage = () => {
+        setCurrentPage(currentPage + 1);
+    };
+
+    return (
+        <Dialog open={open} onClose={onClose}>
+            <DialogTitle>Select Training</DialogTitle>
+            <DialogContent>
+                <List>
+                    {trainings.map(training => (
+                        <ListItem key={training.id} button onClick={() => handleTrainingSelect(training.id)}>
+                            <ListItemText primary={training.name}/>
+                        </ListItem>
+                    ))}
+                </List>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handlePrevPage} disabled={currentPage === 1}>
+                    Previous
+                </Button>
+                <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
+                    Next
+                </Button>
+                <Button onClick={onClose} color="primary">
+                    Cancel
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
+export default TrainingSelectionPopup;

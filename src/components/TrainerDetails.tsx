@@ -1,8 +1,23 @@
 import React, {useEffect, useState} from 'react';
+import {Button, Container, TextField, Typography} from '@mui/material';
 import {useNavigate, useParams} from 'react-router-dom';
-import {Button, Container, Typography} from '@mui/material';
+import TrainingSelectionPopup from './TrainingSelectionPopup';
+
+interface IdName {
+    id: number;
+    name: String;
+}
 
 interface Trainer {
+    id: number;
+    firstname: string;
+    surname: string;
+    facilities: IdName[];
+    skills: IdName[];
+    trophies: IdName[];
+}
+
+interface EditedTrainer {
     id: number;
     firstname: string;
     surname: string;
@@ -11,16 +26,28 @@ interface Trainer {
     trophies: number[];
 }
 
+const convertToEditedTrainer = (trainer: Trainer): EditedTrainer => {
+    const facilityIds = trainer.facilities ? trainer.facilities.map(item => item.id) : [];
+    const specialisations = trainer.skills ? trainer.skills.map(item => item.id) : [];
+    const trophies = trainer.trophies ? trainer.trophies.map(item => item.id) : [];
+
+    return {
+        id: trainer.id,
+        firstname: trainer.firstname,
+        surname: trainer.surname,
+        facilityIds,
+        specialisations,
+        trophies
+    };
+};
+
 const TrainerDetails: React.FC = () => {
     const {id} = useParams<{ id: string }>();
     const [trainer, setTrainer] = useState<Trainer | null>(null);
     const [loading, setLoading] = useState(true);
-
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [editedTrainer, setEditedTrainer] = useState<EditedTrainer | null>(null); // State to hold edited trainer data
     const navigate = useNavigate();
-
-    const handleCancel = () => {
-        navigate('/trainers');
-    }
 
     useEffect(() => {
         const fetchTrainerDetails = async () => {
@@ -28,14 +55,82 @@ const TrainerDetails: React.FC = () => {
                 const response = await fetch(`http://localhost:8080/api/trainers/${id}`);
                 const data = await response.json();
                 setTrainer(data);
+
+                setEditedTrainer(convertToEditedTrainer(data)); // Initialize edited trainer with fetched data
                 setLoading(false);
+                console.log(data)
             } catch (error) {
                 console.error('Error fetching trainer details:', error);
             }
         };
-
         fetchTrainerDetails();
     }, [id]);
+
+    const handleCancel = () => {
+        navigate('/trainers');
+    };
+
+    const handleTrainingSelect = (trainingId: number) => {
+        if (editedTrainer) {
+            const updatedTrainer = {...editedTrainer};
+            // Check if editedTrainer.specialisations is defined before accessing it
+            if (editedTrainer && editedTrainer.specialisations && !editedTrainer.specialisations.includes(trainingId)) {
+                updatedTrainer.specialisations.push(trainingId);
+            }
+            setEditedTrainer(updatedTrainer);
+        }
+        console.log(editedTrainer);
+    };
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const {name, value} = event.target;
+
+        // Check if the property is an array
+        if (name === 'facilityIds' || name === 'specialisations' || name === 'trophies') {
+            // Parse input value to a number and split by commas to create an array
+            const parsedValue = value.split(',').map(Number);
+            setEditedTrainer((prevState: EditedTrainer | null) => ({
+                ...(prevState as EditedTrainer),
+                [name]: parsedValue
+            }));
+        } else {
+            // For string properties, directly assign the value
+            setEditedTrainer((prevState: EditedTrainer | null) => ({
+                ...(prevState as EditedTrainer),
+                [name]: value
+            }));
+        }
+    };
+
+    const handleSave = async () => {
+        if (editedTrainer) {
+            console.log("Edited Trainer:", editedTrainer);
+
+            try {
+                const response = await fetch(`http://localhost:8080/api/trainers/${editedTrainer.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(editedTrainer)
+                });
+
+                if (response.ok) {
+                    // If the response is successful (status code 200-299), handle the success scenario here
+                    console.log('Trainer data saved successfully!');
+                    // Optionally, you can navigate to a different page or show a success message
+                    navigate('/trainers');
+                } else {
+                    // If the response is not successful, handle the error scenario here
+                    console.error('Failed to save trainer data:', response.statusText);
+                    // Optionally, you can show an error message to the user
+                }
+            } catch (error) {
+                // If an error occurs during the fetch request, handle it here
+                console.error('Error saving trainer data:', error);
+                // Optionally, you can show an error message to the user
+            }
+        }
+    };
 
     if (loading) {
         return <div>Loading...</div>;
@@ -45,21 +140,59 @@ const TrainerDetails: React.FC = () => {
         return <div>Trainer not found</div>;
     }
 
+    console.log()
+
     return (
         <Container>
             <Typography variant="h4" gutterBottom>
                 Trainer Details
             </Typography>
-            <Typography variant="h6">
-                Name: {trainer.firstname} {trainer.surname}
-            </Typography>
+            <div>
+                <TextField
+                    label="First Name"
+                    value={editedTrainer?.firstname}
+                    name="firstname"
+                    onChange={handleInputChange}
+                />
+                <TextField
+                    label="Surname"
+                    value={editedTrainer?.surname}
+                    name="surname"
+                    onChange={handleInputChange}
+                />
+            </div>
+            <ul>
+                Skills:
+                {trainer.skills && trainer.skills.map(skill => (
+                    <li key={skill.id} style={{display: 'flex', alignItems: 'center'}}>
+                        <span style={{marginRight: '8px'}}>• {skill.name} [{skill.id}]</span>
+                    </li>
+                ))}
+            </ul>
+            <ul>
+                Facilities:
+                {trainer.facilities && trainer.facilities.map(facility => (
+                    <li key={facility.id} style={{display: 'flex', alignItems: 'center'}}>
+                        <span style={{marginRight: '8px'}}>• {facility.name} [{facility.id}]</span>
+                    </li>
+                ))}
+            </ul>
+            <ul>
+                Trophies:
+                {trainer.trophies && trainer.trophies.map(trophy => (
+                    <li key={trophy.id} style={{display: 'flex', alignItems: 'center'}}>
+                        <span style={{marginRight: '8px'}}>• {trophy.name} [{trophy.id}]</span>
+                    </li>
+                ))}
+            </ul>
             <Button onClick={handleCancel} variant="contained" color="primary">Cancel</Button>
-
-
-            {/* Display other trainer details here */}
-            <Button variant="contained" color="primary">
-                Edit Trainer
-            </Button>
+            <Button variant="contained" color="primary" onClick={() => setIsPopupOpen(true)}>Add Skill</Button>
+            <TrainingSelectionPopup
+                open={isPopupOpen}
+                onClose={() => setIsPopupOpen(false)}
+                onTrainingSelect={handleTrainingSelect}
+            />
+            <Button variant="contained" color="primary" onClick={handleSave}>Save</Button>
         </Container>
     );
 };

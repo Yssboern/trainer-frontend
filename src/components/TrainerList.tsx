@@ -34,6 +34,7 @@ const TrainerList: React.FC = () => {
             setTrainers(data.content);
             setTotalPages(data.totalPages);
             setLoading(false);
+            console.log(data)
         } catch (error) {
             console.error('Error fetching trainers:', error);
         }
