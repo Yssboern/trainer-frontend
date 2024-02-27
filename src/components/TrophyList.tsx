@@ -1,38 +1,38 @@
+//TrophyList.tsx
 import React, {useEffect, useState} from 'react';
 import {Button, Container, Typography} from '@mui/material';
-import {Link, useNavigate} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 
-interface Trainer {
+interface Trophy {
     id: number;
-    firstname: string;
-    surname: string;
-    facilityIds: number[];
-    specialisations: number[];
-    trophies: number[];
+    name: string;
+    year: number;
 }
 
-const TrainerList: React.FC = () => {
-    const [trainers, setTrainers] = useState<Trainer[]>([]);
+interface Pageable {
+    pageNumber: number;
+}
+
+const TrophyList: React.FC = () => {
+    const [trophies, setTrophies] = useState<Trophy[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
 
-    const navigate = useNavigate();
-
     useEffect(() => {
-        fetchTrainers();
+        fetchTrophies();
     }, [currentPage]);
 
-    const fetchTrainers = async () => {
+    const fetchTrophies = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/trainers?page=${currentPage}`);
+            const response = await fetch(`http://localhost:8080/api/trophies?page=${currentPage}`);
             const data = await response.json();
-            setTrainers(data.content);
+            setTrophies(data.content);
             setTotalPages(data.totalPages);
             setLoading(false);
-            console.log(data)
+            console.log(data);
         } catch (error) {
-            console.error('Error fetching trainers:', error);
+            console.error('Error fetching trophies:', error);
         }
     };
 
@@ -42,20 +42,16 @@ const TrainerList: React.FC = () => {
     return (
         <Container>
             <Typography variant="h4" gutterBottom>
-                Trainer List
+                Trophy List
             </Typography>
-            <Link to="/add-trainer">Add Trainer</Link>
+            <Link to="/add-trophy">Add Trophy</Link>
             {loading ? (
                 <div>Loading...</div>
             ) : (
                 <ul>
-                    {trainers.map(trainer => (
-                        <li key={trainer.id} style={{display: 'flex', alignItems: 'center'}}>
-                            <span style={{marginRight: '8px'}}>•</span>
-                            <Button onClick={() => {
-                                navigate(`/trainer/${trainer.id}`)
-                            }}> {trainer.firstname} {trainer.surname}</Button>
-
+                    {trophies.map(trophy => (
+                        <li key={trophy.id}>
+                            {trophy.name} {trophy.year} [{trophy.id}]
                         </li>
                     ))}
                 </ul>
@@ -69,4 +65,4 @@ const TrainerList: React.FC = () => {
     );
 };
 
-export default TrainerList;
+export default TrophyList;

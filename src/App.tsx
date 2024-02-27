@@ -12,6 +12,8 @@ import BookingList from "./components/BookingList";
 import {Drawer, List, ListItemButton, ListItemText} from '@mui/material';
 import TrainingList from "./components/TrainingList";
 import AddTraining from "./components/AddTraining";
+import TrophyList from "./components/TrophyList";
+import AddTrophy from "./components/AddTrophy";
 
 const darkTheme = createTheme({
     palette: {
@@ -47,6 +49,9 @@ const App: React.FC = () => {
                         <ListItemButton component="a" href="/trainings">
                             <ListItemText primary="View Training List"/>
                         </ListItemButton>
+                        <ListItemButton component="a" href="/trophies">
+                            <ListItemText primary="View Trophy List"/>
+                        </ListItemButton>
                     </List>
                 </Drawer>
                 <Routes>
@@ -59,6 +64,8 @@ const App: React.FC = () => {
                     <Route path="/bookings" element={<BookingList/>}/>
                     <Route path="/trainings" element={<TrainingList/>}/>
                     <Route path="/add-training" element={<AddTraining/>}/>
+                    <Route path="/trophies" element={<TrophyList/>}/>
+                    <Route path="/add-trophy" element={<AddTrophy/>}/>
                 </Routes>
             </Router>
         </ThemeProvider>

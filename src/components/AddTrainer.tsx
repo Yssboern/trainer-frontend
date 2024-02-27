@@ -7,15 +7,6 @@ const AddTrainer: React.FC = () => {
     const [newTrainerLastName, setNewTrainerLastName] = useState('');
     const navigate = useNavigate();
 
-    // const handleAddTrainer = () => {
-    //     // Handle adding the new trainer here
-    //     // This could involve making an API call to add the trainer to your backend
-    //
-    //     // Navigate back to the TrainerList page after adding the trainer
-    //     console.log(newTrainerFirstName + " " + newTrainerLastName);
-    //     navigate('/trainers');
-    // };
-
     const handleAddTrainer = async () => {
         try {
             const response = await fetch('http://localhost:8080/api/trainers', {
