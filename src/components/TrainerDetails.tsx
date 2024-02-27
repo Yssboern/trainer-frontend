@@ -1,8 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import {Accordion, AccordionDetails, AccordionSummary, Button, Container, TextField, Typography} from '@mui/material';
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Button,
+    Container,
+    IconButton,
+    TextField,
+    Typography
+} from '@mui/material';
 import {useNavigate, useParams} from 'react-router-dom';
 import TrainingSelectionPopup from './TrainingSelectionPopup';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 interface IdName {
     id: number;
@@ -106,7 +116,6 @@ const TrainerDetails: React.FC = () => {
         }
     };
 
-
     const handleSave = async () => {
         const trainerSaveData = editedTrainer ? convertToTrainerSaveData(editedTrainer) : null
         if (trainerSaveData) {
@@ -168,23 +177,34 @@ const TrainerDetails: React.FC = () => {
                     onChange={handleInputChange}
                 />
             </div>
+
             <Accordion>
-                <AccordionSummary expandIcon={<ExpandMoreIcon/>} aria-controls="panel1a-content" id="panel1a-header">
-                    <Typography>Skills</Typography>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} // Add this line
+                >
+                    <Typography>Skills [{trainer.skills.length}]</Typography>
+                    <IconButton aria-label="add-skill" onClick={() => setIsPopupOpen(true)}>
+                        <AddCircleOutlineIcon/>
+                    </IconButton>
                 </AccordionSummary>
                 <AccordionDetails>
                     <ul>
                         {trainer.skills && trainer.skills.map(skill => (
-                            <li key={skill.id} style={{display: 'flex', alignItems: 'center'}}>
-                                <span style={{marginRight: '8px'}}>• {skill.name} [{skill.id}]</span>
+                            <li key={skill.id} style={{ display: 'flex', alignItems: 'center' }}>
+                                <span style={{ marginRight: '8px' }}>• {skill.name} [id:{skill.id}]</span>
                             </li>
                         ))}
                     </ul>
                 </AccordionDetails>
             </Accordion>
+
+
             <Accordion>
                 <AccordionSummary expandIcon={<ExpandMoreIcon/>} aria-controls="panel2a-content" id="panel2a-header">
-                    <Typography>Facilities</Typography>
+                    <Typography>Facilities [{trainer.facilities.length}]</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <ul>
@@ -198,7 +218,7 @@ const TrainerDetails: React.FC = () => {
             </Accordion>
             <Accordion>
                 <AccordionSummary expandIcon={<ExpandMoreIcon/>} aria-controls="panel3a-content" id="panel3a-header">
-                    <Typography>Trophies</Typography>
+                    <Typography>Trophies [{trainer.trophies.length}]</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <ul>
