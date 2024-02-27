@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Accordion,
     AccordionDetails,
@@ -9,10 +9,11 @@ import {
     TextField,
     Typography
 } from '@mui/material';
-import {useNavigate, useParams} from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import TrainingSelectionPopup from './TrainingSelectionPopup';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline'; // Import the remove icon
 
 interface IdName {
     id: number;
@@ -53,7 +54,7 @@ const convertToTrainerSaveData = (trainer: Trainer): TrainerSaveData => {
 };
 
 const TrainerDetails: React.FC = () => {
-    const {id} = useParams<{ id: string }>();
+    const { id } = useParams<{ id: string }>();
     const [trainer, setTrainer] = useState<Trainer | null>(null);
     const [loading, setLoading] = useState(true);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -80,13 +81,13 @@ const TrainerDetails: React.FC = () => {
         navigate('/trainers');
     };
 
-    const handleTrainingSelect = (trainig: IdName) => {
+    const handleTrainingSelect = (training: IdName) => {
         if (editedTrainer) {
-            const updatedTrainer = {...editedTrainer};
+            const updatedTrainer = { ...editedTrainer };
             if (updatedTrainer && updatedTrainer.skills) {
-                const isDuplicate = updatedTrainer.skills.some(skill => skill.id === trainig.id);
+                const isDuplicate = updatedTrainer.skills.some(skill => skill.id === training.id);
                 if (!isDuplicate) {
-                    updatedTrainer.skills.push(trainig);
+                    updatedTrainer.skills.push(training);
                     setEditedTrainer(updatedTrainer);
                     console.log(updatedTrainer);
                 } else {
@@ -96,8 +97,16 @@ const TrainerDetails: React.FC = () => {
         }
     };
 
+    const handleRemoveSkill = (skillId: number) => {
+        if (editedTrainer) {
+            const updatedTrainer = { ...editedTrainer };
+            updatedTrainer.skills = updatedTrainer.skills.filter(skill => skill.id !== skillId);
+            setEditedTrainer(updatedTrainer);
+        }
+    };
+
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = event.target;
+        const { name, value } = event.target;
 
         // Check if the property is an array
         if (name === 'facilityIds' || name === 'specialisations' || name === 'trophies') {
@@ -156,8 +165,6 @@ const TrainerDetails: React.FC = () => {
         return <div>Trainer not found</div>;
     }
 
-    console.log()
-
     return (
         <Container>
             <Typography variant="h4" gutterBottom>
@@ -183,11 +190,11 @@ const TrainerDetails: React.FC = () => {
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
-                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} // Add this line
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
                     <Typography>Skills [{trainer.skills.length}]</Typography>
                     <IconButton aria-label="add-skill" onClick={() => setIsPopupOpen(true)}>
-                        <AddCircleOutlineIcon/>
+                        <AddCircleOutlineIcon />
                     </IconButton>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -195,36 +202,38 @@ const TrainerDetails: React.FC = () => {
                         {trainer.skills && trainer.skills.map(skill => (
                             <li key={skill.id} style={{ display: 'flex', alignItems: 'center' }}>
                                 <span style={{ marginRight: '8px' }}>• {skill.name} [id:{skill.id}]</span>
+                                <IconButton aria-label="remove-skill" onClick={() => handleRemoveSkill(skill.id)}>
+                                    <RemoveCircleOutlineIcon />
+                                </IconButton>
                             </li>
                         ))}
                     </ul>
                 </AccordionDetails>
             </Accordion>
 
-
             <Accordion>
-                <AccordionSummary expandIcon={<ExpandMoreIcon/>} aria-controls="panel2a-content" id="panel2a-header">
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
                     <Typography>Facilities [{trainer.facilities.length}]</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <ul>
                         {trainer.facilities && trainer.facilities.map(facility => (
-                            <li key={facility.id} style={{display: 'flex', alignItems: 'center'}}>
-                                <span style={{marginRight: '8px'}}>• {facility.name} [{facility.id}]</span>
+                            <li key={facility.id} style={{ display: 'flex', alignItems: 'center' }}>
+                                <span style={{ marginRight: '8px' }}>• {facility.name} [{facility.id}]</span>
                             </li>
                         ))}
                     </ul>
                 </AccordionDetails>
             </Accordion>
             <Accordion>
-                <AccordionSummary expandIcon={<ExpandMoreIcon/>} aria-controls="panel3a-content" id="panel3a-header">
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel3a-content" id="panel3a-header">
                     <Typography>Trophies [{trainer.trophies.length}]</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <ul>
                         {trainer.trophies && trainer.trophies.map(trophy => (
-                            <li key={trophy.id} style={{display: 'flex', alignItems: 'center'}}>
-                                <span style={{marginRight: '8px'}}>• {trophy.name} [{trophy.id}]</span>
+                            <li key={trophy.id} style={{ display: 'flex', alignItems: 'center' }}>
+                                <span style={{ marginRight: '8px' }}>• {trophy.name} [{trophy.id}]</span>
                             </li>
                         ))}
                     </ul>
