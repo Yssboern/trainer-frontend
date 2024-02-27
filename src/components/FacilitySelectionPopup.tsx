@@ -1,4 +1,4 @@
-// TrainingSelectionPopup.tsx
+// FacilitySelectionPopup.tsx
 import React, {useEffect, useState} from 'react';
 import {
     Button,
@@ -11,7 +11,7 @@ import {
     ListItemText
 } from '@mui/material';
 
-interface Training {
+interface Facility {
     id: number;
     name: string;
 }
@@ -19,31 +19,37 @@ interface Training {
 interface Props {
     open: boolean;
     onClose: () => void;
-    onTrainingSelect: (training: Training) => void;
+    onFacilitySelect: (facility: Facility) => void;
 }
 
-const TrainingSelectionPopup: React.FC<Props> = ({open, onClose, onTrainingSelect}) => {
-    const [trainings, setTrainings] = useState<Training[]>([]);
+const FacilitySelectionPopup: React.FC<Props> = ({open, onClose, onFacilitySelect}) => {
+    const [facilities, setFacilities] = useState<Facility[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
-        fetchTrainings();
+        fetchFacilities();
     }, [currentPage]);
 
-    const fetchTrainings = async () => {
+    const fetchFacilities = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/api/trainings?page=${currentPage}`);
+            const response = await fetch(`http://localhost:8080/api/facilities?page=${currentPage}`);
             const data = await response.json();
-            setTrainings(data.content);
+
+            const ff: Facility[] = data.content.map((f: { facid: number; name: string; }) => ({
+                id: f.facid,
+                name: f.name
+            }));
+            setFacilities(ff);
             setTotalPages(data.totalPages);
             setLoading(false);
+            console.log(data)
         } catch (error) {
-            console.error('Error fetching trainings:', error);
-            setError('Failed to fetch trainings');
+            console.error('Error fetching facilities:', error);
+            setError('Failed to fetch facilities');
             setLoading(false);
         }
     };
@@ -56,11 +62,6 @@ const TrainingSelectionPopup: React.FC<Props> = ({open, onClose, onTrainingSelec
         return <div>Error: {error}</div>;
     }
 
-    const handleTrainingSelect = (training: Training) => {
-        onTrainingSelect(training);
-        onClose();
-    };
-
     const handlePrevPage = () => {
         setCurrentPage(currentPage - 1);
     };
@@ -69,16 +70,21 @@ const TrainingSelectionPopup: React.FC<Props> = ({open, onClose, onTrainingSelec
         setCurrentPage(currentPage + 1);
     };
 
-    console.log("trainings: ");
-    console.log(trainings);
+    const handleFacilitySelect = (facility: Facility) => {
+        onFacilitySelect(facility);
+        onClose();
+    };
+
+    console.log("facilities");
+    console.log(facilities);
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogTitle>Select Training</DialogTitle>
+            <DialogTitle>Select Facility</DialogTitle>
             <DialogContent>
                 <List>
-                    {trainings.map(training => (
-                        <ListItemButton key={training.id} onClick={() => handleTrainingSelect(training)}>
-                            <ListItemText primary={training.name}/>
+                    {facilities.map(facility => (
+                        <ListItemButton key={facility.id} onClick={() => handleFacilitySelect(facility)}>
+                            <ListItemText primary={facility.name}/>
                         </ListItemButton>
                     ))}
                 </List>
@@ -98,4 +104,4 @@ const TrainingSelectionPopup: React.FC<Props> = ({open, onClose, onTrainingSelec
     );
 };
 
-export default TrainingSelectionPopup;
+export default FacilitySelectionPopup;
