@@ -15,6 +15,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import FacilitySelectionPopup from "./FacilitySelectionPopup"; // Import the remove icon
+import TrophySelectionPopup from './TrophySelectionPopup'; // Import the TrophySelectionPopup component
 
 interface IdName {
     id: number;
@@ -60,7 +61,8 @@ const TrainerDetails: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [isFacilityPopupOpen, setIsFacilityPopupOpen] = useState(false);
     const [isTrainingPopupOpen, setIsTrainingPopupOpen] = useState(false);
-    const [editedTrainer, setEditedTrainer] = useState<Trainer | null>(null); // State to hold edited trainer data
+    const [isTrophyPopupOpen, setIsTrophyPopupOpen] = useState(false); // State for trophy popup
+    const [editedTrainer, setEditedTrainer] = useState<Trainer | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -71,7 +73,6 @@ const TrainerDetails: React.FC = () => {
                 setTrainer(data);
                 setEditedTrainer(data);
                 setLoading(false);
-                console.log(data)
             } catch (error) {
                 console.error('Error fetching trainer details:', error);
             }
@@ -107,7 +108,6 @@ const TrainerDetails: React.FC = () => {
                 const isDuplicate = updatedTrainer.facilities.some(fac => fac.id === facility.id);
                 if (!isDuplicate) {
                     updatedTrainer.facilities.push(facility);
-                    console.log(updatedTrainer)
                     setEditedTrainer(updatedTrainer);
                     console.log(updatedTrainer);
                 } else {
@@ -117,6 +117,21 @@ const TrainerDetails: React.FC = () => {
         }
     };
 
+    const handleTrophySelect = (trophy: IdName) => {
+        if (editedTrainer) {
+            const updatedTrainer = {...editedTrainer};
+            if (updatedTrainer && updatedTrainer.trophies) {
+                const isDuplicate = updatedTrainer.trophies.some(t => t.id === trophy.id);
+                if (!isDuplicate) {
+                    updatedTrainer.trophies.push(trophy);
+                    setEditedTrainer(updatedTrainer);
+                    console.log(updatedTrainer);
+                } else {
+                    console.log("Trophy already exists in the trophies array.");
+                }
+            }
+        }
+    };
 
     const handleRemoveSkill = (skillId: number) => {
         if (editedTrainer) {
@@ -260,6 +275,9 @@ const TrainerDetails: React.FC = () => {
                     id="panel3a-header"
                 >
                     <Typography>Trophies [{trainer.trophies.length}]</Typography>
+                    <IconButton aria-label="add-trophy" onClick={() => setIsTrophyPopupOpen(true)}>
+                        <AddCircleOutlineIcon/>
+                    </IconButton>
                 </AccordionSummary>
                 <AccordionDetails>
                     <ul>
@@ -272,20 +290,26 @@ const TrainerDetails: React.FC = () => {
                 </AccordionDetails>
             </Accordion>
             <Button onClick={handleCancel} variant="contained" color="primary">Cancel</Button>
-            <Button variant="contained" color="primary" onClick={() => setIsFacilityPopupOpen(true)}>Add
-                Facility</Button>
+            <Button variant="contained" color="primary" onClick={() => setIsFacilityPopupOpen(true)}>Add Facility</Button>
             <Button variant="contained" color="primary" onClick={() => setIsTrainingPopupOpen(true)}>Add Skill</Button>
+            <Button variant="contained" color="primary" onClick={() => setIsTrophyPopupOpen(true)}>Add Trophy</Button>
+            <Button variant="contained" color="primary" onClick={handleSave}>Save</Button>
+
             <TrainingSelectionPopup
                 open={isTrainingPopupOpen}
                 onClose={() => setIsTrainingPopupOpen(false)}
-                onTrainingSelect={handleTrainingSelect}
-            />
+                onTrainingSelect={handleTrainingSelect}/>
+
             <FacilitySelectionPopup
                 open={isFacilityPopupOpen}
                 onClose={() => setIsFacilityPopupOpen(false)}
-                onFacilitySelect={handleFacilitySelect}
-            />
-            <Button variant="contained" color="primary" onClick={handleSave}>Save</Button>
+                onFacilitySelect={handleFacilitySelect}/>
+
+            <TrophySelectionPopup
+                open={isTrophyPopupOpen}
+                onClose={() => setIsTrophyPopupOpen(false)}
+                onTrophySelect={handleTrophySelect}/>
+
         </Container>
     );
 };

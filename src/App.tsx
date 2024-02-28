@@ -21,6 +21,14 @@ const darkTheme = createTheme({
     },
 });
 
+function MarkConsole() { // just visual aid
+    console.log("########################################################");
+    console.log("Current Time:", new Date().toLocaleTimeString());
+    console.log("########################################################");
+    fetch(`http://localhost:8080/api/marker`);
+    return null;
+}
+
 const App: React.FC = () => {
     return (
         <ThemeProvider theme={darkTheme}>
@@ -52,6 +60,9 @@ const App: React.FC = () => {
                         <ListItemButton component="a" href="/trophies">
                             <ListItemText primary="View Trophy List"/>
                         </ListItemButton>
+                        <ListItemButton component="a" href="/mark-console">
+                            <ListItemText primary="Mark Console"/>
+                        </ListItemButton>
                     </List>
                 </Drawer>
                 <Routes>
@@ -66,6 +77,7 @@ const App: React.FC = () => {
                     <Route path="/add-training" element={<AddTraining/>}/>
                     <Route path="/trophies" element={<TrophyList/>}/>
                     <Route path="/add-trophy" element={<AddTrophy/>}/>
+                    <Route path="/mark-console" element={<MarkConsole/>}/>
                 </Routes>
             </Router>
         </ThemeProvider>

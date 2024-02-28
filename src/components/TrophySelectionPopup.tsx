@@ -1,5 +1,4 @@
-// FacilitySelectionPopup.tsx
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Button,
     Dialog,
@@ -11,7 +10,7 @@ import {
     ListItemText
 } from '@mui/material';
 
-interface Facility {
+interface Trophy {
     id: number;
     name: string;
 }
@@ -19,39 +18,51 @@ interface Facility {
 interface Props {
     open: boolean;
     onClose: () => void;
-    onFacilitySelect: (facility: Facility) => void;
+    onTrophySelect: (trophy: Trophy) => void;
 }
 
-const FacilitySelectionPopup: React.FC<Props> = ({open, onClose, onFacilitySelect}) => {
-    const [facilities, setFacilities] = useState<Facility[]>([]);
+const TrophySelectionPopup: React.FC<Props> = ({ open, onClose, onTrophySelect }) => {
+    const [trophies, setTrophies] = useState<Trophy[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
-        fetchFacilities();
+        fetchTrophies();
     }, [currentPage]);
 
-    const fetchFacilities = async () => {
+    const fetchTrophies = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/api/facilities?page=${currentPage}`);
+            const response = await fetch(`http://localhost:8080/api/trophies?page=${currentPage}`);
             const data = await response.json();
 
-            const ff: Facility[] = data.content.map((f: { facid: number; name: string; }) => ({
-                id: f.facid,
-                name: f.name
+            const tt: Trophy[] = data.content.map((t: { id: number; name: string }) => ({
+                id: t.id,
+                name: t.name
             }));
-            setFacilities(ff);
+            setTrophies(tt);
             setTotalPages(data.totalPages);
             setLoading(false);
-            console.log(data)
         } catch (error) {
-            console.error('Error fetching facilities:', error);
-            setError('Failed to fetch facilities');
+            console.error('Error fetching trophies:', error);
+            setError('Failed to fetch trophies');
             setLoading(false);
         }
+    };
+
+    const handlePrevPage = () => {
+        setCurrentPage(currentPage - 1);
+    };
+
+    const handleNextPage = () => {
+        setCurrentPage(currentPage + 1);
+    };
+
+    const handleTrophySelect = (trophy: Trophy) => {
+        onTrophySelect(trophy);
+        onClose();
     };
 
     if (loading) {
@@ -62,29 +73,14 @@ const FacilitySelectionPopup: React.FC<Props> = ({open, onClose, onFacilitySelec
         return <div>Error: {error}</div>;
     }
 
-    const handlePrevPage = () => {
-        setCurrentPage(currentPage - 1);
-    };
-
-    const handleNextPage = () => {
-        setCurrentPage(currentPage + 1);
-    };
-
-    const handleFacilitySelect = (facility: Facility) => {
-        onFacilitySelect(facility);
-        onClose();
-    };
-
-    // console.log("facilities");
-    // console.log(facilities);
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogTitle>Select Facility</DialogTitle>
+            <DialogTitle>Select Trophy</DialogTitle>
             <DialogContent>
                 <List>
-                    {facilities.map(facility => (
-                        <ListItemButton key={facility.id} onClick={() => handleFacilitySelect(facility)}>
-                            <ListItemText primary={facility.name}/>
+                    {trophies.map(trophy => (
+                        <ListItemButton key={trophy.id} onClick={() => handleTrophySelect(trophy)}>
+                            <ListItemText primary={trophy.name} />
                         </ListItemButton>
                     ))}
                 </List>
@@ -104,4 +100,4 @@ const FacilitySelectionPopup: React.FC<Props> = ({open, onClose, onFacilitySelec
     );
 };
 
-export default FacilitySelectionPopup;
+export default TrophySelectionPopup;
