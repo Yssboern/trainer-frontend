@@ -4,6 +4,7 @@ import {
     AccordionDetails,
     AccordionSummary,
     Button,
+    CircularProgress,
     Container,
     IconButton,
     TextField,
@@ -14,8 +15,9 @@ import TrainingSelectionPopup from './TrainingSelectionPopup';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
-import FacilitySelectionPopup from "./FacilitySelectionPopup"; // Import the remove icon
-import TrophySelectionPopup from './TrophySelectionPopup'; // Import the TrophySelectionPopup component
+import FacilitySelectionPopup from "./FacilitySelectionPopup";
+import TrophySelectionPopup from './TrophySelectionPopup';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface IdName {
     id: number;
@@ -29,6 +31,7 @@ interface Trainer {
     facilities: IdName[];
     skills: IdName[];
     trophies: IdName[];
+    notes: IdName[];
 }
 
 interface TrainerSaveData {
@@ -38,12 +41,14 @@ interface TrainerSaveData {
     facilityIds: number[];
     specialisations: number[];
     trophies: number[];
+    notes: IdName[];
 }
 
 const convertToTrainerSaveData = (trainer: Trainer): TrainerSaveData => {
     const facilityIds = trainer.facilities ? trainer.facilities.map(item => item.id) : [];
     const specialisations = trainer.skills ? trainer.skills.map(item => item.id) : [];
     const trophies = trainer.trophies ? trainer.trophies.map(item => item.id) : [];
+    const notes = trainer.notes ? trainer.notes : [];
 
     return {
         id: trainer.id,
@@ -51,7 +56,8 @@ const convertToTrainerSaveData = (trainer: Trainer): TrainerSaveData => {
         surname: trainer.surname,
         facilityIds,
         specialisations,
-        trophies
+        trophies,
+        notes
     };
 };
 
@@ -61,9 +67,15 @@ const TrainerDetails: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [isFacilityPopupOpen, setIsFacilityPopupOpen] = useState(false);
     const [isTrainingPopupOpen, setIsTrainingPopupOpen] = useState(false);
-    const [isTrophyPopupOpen, setIsTrophyPopupOpen] = useState(false); // State for trophy popup
+    const [isTrophyPopupOpen, setIsTrophyPopupOpen] = useState(false);
+    const [isAddNoteVisible, setIsAddNoteVisible] = useState(false);
     const [editedTrainer, setEditedTrainer] = useState<Trainer | null>(null);
+
     const navigate = useNavigate();
+
+    const [note, setNote] = useState('');
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         const fetchTrainerDetails = async () => {
@@ -133,6 +145,39 @@ const TrainerDetails: React.FC = () => {
         }
     };
 
+    const handleTrophyPlus = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        event.stopPropagation();
+        console.log('Add button clicked!');
+        setIsTrophyPopupOpen(true);
+    };
+
+    const handleSaveNote = async () => {
+        setLoading(true);
+        setError('');
+        setSuccess(false);
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/trainers/${id}/notes`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({name: note})
+            });
+
+            if (response.ok) {
+                setSuccess(true);
+                setNote('');
+            } else {
+                setError('Failed to save note.');
+            }
+        } catch (error) {
+            setError('Error saving note: ' + error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleRemoveSkill = (skillId: number) => {
         if (editedTrainer) {
             const updatedTrainer = {...editedTrainer};
@@ -141,19 +186,32 @@ const TrainerDetails: React.FC = () => {
         }
     };
 
+    const handleNoteChange = (index: number, value: string) => {
+        if (editedTrainer) {
+            const updatedTrainer = {...editedTrainer};
+            updatedTrainer.notes[index].name = value; // Update the text of the note at the specified index
+            setEditedTrainer(updatedTrainer);
+        }
+    };
+
+    const handleRemoveNote = (index: number) => {
+        if (editedTrainer) {
+            const updatedTrainer = {...editedTrainer};
+            updatedTrainer.notes.splice(index, 1); // Remove the note at the specified index
+            setEditedTrainer(updatedTrainer);
+        }
+    };
+
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = event.target;
 
-        // Check if the property is an array
         if (name === 'facilityIds' || name === 'specialisations' || name === 'trophies') {
-            // Parse input value to a number and split by commas to create an array
             const parsedValue = value ? value.split(',').map(Number) : [];
             setEditedTrainer((prevState: Trainer | null) => ({
                 ...(prevState as Trainer),
                 [name]: parsedValue
             }));
         } else {
-            // For string properties, directly assign the value
             setEditedTrainer((prevState: Trainer | null) => ({
                 ...(prevState as Trainer),
                 [name]: value
@@ -176,19 +234,13 @@ const TrainerDetails: React.FC = () => {
                 });
 
                 if (response.ok) {
-                    // If the response is successful (status code 200-299), handle the success scenario here
                     console.log('Trainer data saved successfully!');
-                    // Optionally, you can navigate to a different page or show a success message
                     navigate('/trainers');
                 } else {
-                    // If the response is not successful, handle the error scenario here
                     console.error('Failed to save trainer data:', response.statusText);
-                    // Optionally, you can show an error message to the user
                 }
             } catch (error) {
-                // If an error occurs during the fetch request, handle it here
                 console.error('Error saving trainer data:', error);
-                // Optionally, you can show an error message to the user
             }
         }
     };
@@ -206,6 +258,7 @@ const TrainerDetails: React.FC = () => {
             <Typography variant="h4" gutterBottom>
                 Trainer Details
             </Typography>
+            {/*         NAME SURNAME           */}
             <div>
                 <TextField
                     label="First Name"
@@ -220,7 +273,7 @@ const TrainerDetails: React.FC = () => {
                     onChange={handleInputChange}
                 />
             </div>
-
+            {/*         SKILLS           */}
             <Accordion>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon/>}
@@ -246,7 +299,7 @@ const TrainerDetails: React.FC = () => {
                     </ul>
                 </AccordionDetails>
             </Accordion>
-
+            {/*         FACILITIES           */}
             <Accordion>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon/>}
@@ -268,6 +321,7 @@ const TrainerDetails: React.FC = () => {
                     </ul>
                 </AccordionDetails>
             </Accordion>
+            {/*         TROPHIES           */}
             <Accordion>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon/>}
@@ -275,7 +329,7 @@ const TrainerDetails: React.FC = () => {
                     id="panel3a-header"
                 >
                     <Typography>Trophies [{trainer.trophies.length}]</Typography>
-                    <IconButton aria-label="add-trophy" onClick={() => setIsTrophyPopupOpen(true)}>
+                    <IconButton aria-label="add-trophy" onClick={handleTrophyPlus}>
                         <AddCircleOutlineIcon/>
                     </IconButton>
                 </AccordionSummary>
@@ -289,11 +343,73 @@ const TrainerDetails: React.FC = () => {
                     </ul>
                 </AccordionDetails>
             </Accordion>
+            {/*         NOTES           */}
+            <Accordion>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon/>}
+                    aria-controls="panel4a-content"
+                    id="panel4a-header"
+                >
+                    <Typography>Notes [{trainer.notes.length}]</Typography>
+                    {/*<IconButton aria-label="add-note" onClick={handleAddNote}>*/}
+                    {/*    <AddCircleOutlineIcon/>*/}
+                    {/*</IconButton>*/}
+                </AccordionSummary>
+                <AccordionDetails>
+                    <ul>
+                        {trainer.notes.map((note, index) => (
+                            <li key={note.id}>
+                                <TextField
+                                    value={note.name}
+                                    onChange={(event) => handleNoteChange(index, event.target.value)}
+                                    multiline
+                                    fullWidth
+                                    variant="outlined"
+                                    InputProps={{
+                                        endAdornment: (
+                                            <IconButton aria-label="delete-note"
+                                                        onClick={() => handleRemoveNote(index)}>
+                                                <DeleteIcon/>
+                                            </IconButton>
+                                        )
+                                    }}
+                                />
+                            </li>
+                        ))}
+                    </ul>
+                </AccordionDetails>
+            </Accordion>
+
             <Button onClick={handleCancel} variant="contained" color="primary">Cancel</Button>
-            <Button variant="contained" color="primary" onClick={() => setIsFacilityPopupOpen(true)}>Add Facility</Button>
+            <Button variant="contained" color="primary" onClick={() => setIsFacilityPopupOpen(true)}>Add
+                Facility</Button>
             <Button variant="contained" color="primary" onClick={() => setIsTrainingPopupOpen(true)}>Add Skill</Button>
             <Button variant="contained" color="primary" onClick={() => setIsTrophyPopupOpen(true)}>Add Trophy</Button>
+            <Button variant="contained" color="primary" onClick={() => setIsAddNoteVisible(!isAddNoteVisible)}>Add
+                Note</Button>
             <Button variant="contained" color="primary" onClick={handleSave}>Save</Button>
+
+            <div style={{display: isAddNoteVisible ? 'block' : 'none'}}>
+                <TextField
+                    label="Add Note"
+                    variant="outlined"
+                    fullWidth
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    disabled={loading}
+                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSaveNote}
+                    disabled={loading}
+                    style={{marginTop: '1rem'}}
+                >
+                    {loading ? <CircularProgress size={24}/> : 'Save Note'}
+                </Button>
+                {error && <p style={{color: 'red'}}>{error}</p>}
+                {success && <p style={{color: 'green'}}>Note saved successfully!</p>}
+            </div>
 
             <TrainingSelectionPopup
                 open={isTrainingPopupOpen}
