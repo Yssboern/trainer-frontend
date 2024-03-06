@@ -4,10 +4,10 @@ import {
     AccordionDetails,
     AccordionSummary,
     Button,
-    CircularProgress,
     Container,
     IconButton,
     TextField,
+    Tooltip,
     Typography
 } from '@mui/material';
 import {useNavigate, useParams} from 'react-router-dom';
@@ -18,6 +18,7 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import FacilitySelectionPopup from "./FacilitySelectionPopup";
 import TrophySelectionPopup from './TrophySelectionPopup';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddNoteField from "./AddNoteField";
 
 interface IdName {
     id: number;
@@ -72,10 +73,6 @@ const TrainerDetails: React.FC = () => {
     const [editedTrainer, setEditedTrainer] = useState<Trainer | null>(null);
 
     const navigate = useNavigate();
-
-    const [note, setNote] = useState('');
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         const fetchTrainerDetails = async () => {
@@ -147,36 +144,14 @@ const TrainerDetails: React.FC = () => {
 
     const handleTrophyPlus = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.stopPropagation();
-        console.log('Add button clicked!');
         setIsTrophyPopupOpen(true);
     };
 
-    const handleSaveNote = async () => {
-        setLoading(true);
-        setError('');
-        setSuccess(false);
-
-        try {
-            const response = await fetch(`http://localhost:8080/api/trainers/${id}/notes`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({name: note})
-            });
-
-            if (response.ok) {
-                setSuccess(true);
-                setNote('');
-            } else {
-                setError('Failed to save note.');
-            }
-        } catch (error) {
-            setError('Error saving note: ' + error);
-        } finally {
-            setLoading(false);
-        }
+    const handleAddNote = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        event.stopPropagation();
+        setIsAddNoteVisible(!isAddNoteVisible)
     };
+
 
     const handleRemoveSkill = (skillId: number) => {
         if (editedTrainer) {
@@ -256,7 +231,7 @@ const TrainerDetails: React.FC = () => {
     return (
         <Container>
             <Typography variant="h4" gutterBottom>
-                Trainer Details
+                Trainer Details [{id}]
             </Typography>
             {/*         NAME SURNAME           */}
             <div>
@@ -351,12 +326,19 @@ const TrainerDetails: React.FC = () => {
                     id="panel4a-header"
                 >
                     <Typography>Notes [{trainer.notes.length}]</Typography>
-                    {/*<IconButton aria-label="add-note" onClick={handleAddNote}>*/}
-                    {/*    <AddCircleOutlineIcon/>*/}
-                    {/*</IconButton>*/}
+                    <Tooltip title="Add Note" placement="top">
+                        <IconButton aria-label="add-note" onClick={handleAddNote}>
+                            <AddCircleOutlineIcon/>
+                        </IconButton>
+                    </Tooltip>
                 </AccordionSummary>
                 <AccordionDetails>
                     <ul>
+                        {!isAddNoteVisible ? null : (
+                            <li>
+                                <AddNoteField id={id}/>
+                            </li>
+                        )}
                         {trainer.notes.map((note, index) => (
                             <li key={note.id}>
                                 <TextField
@@ -385,31 +367,7 @@ const TrainerDetails: React.FC = () => {
                 Facility</Button>
             <Button variant="contained" color="primary" onClick={() => setIsTrainingPopupOpen(true)}>Add Skill</Button>
             <Button variant="contained" color="primary" onClick={() => setIsTrophyPopupOpen(true)}>Add Trophy</Button>
-            <Button variant="contained" color="primary" onClick={() => setIsAddNoteVisible(!isAddNoteVisible)}>Add
-                Note</Button>
             <Button variant="contained" color="primary" onClick={handleSave}>Save</Button>
-
-            <div style={{display: isAddNoteVisible ? 'block' : 'none'}}>
-                <TextField
-                    label="Add Note"
-                    variant="outlined"
-                    fullWidth
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    disabled={loading}
-                />
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSaveNote}
-                    disabled={loading}
-                    style={{marginTop: '1rem'}}
-                >
-                    {loading ? <CircularProgress size={24}/> : 'Save Note'}
-                </Button>
-                {error && <p style={{color: 'red'}}>{error}</p>}
-                {success && <p style={{color: 'green'}}>Note saved successfully!</p>}
-            </div>
 
             <TrainingSelectionPopup
                 open={isTrainingPopupOpen}
