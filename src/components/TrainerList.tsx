@@ -20,7 +20,7 @@ const TrainerList: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchTrainers();
+        fetchTrainers().then(() => null);
     }, [currentPage]);
 
     const fetchTrainers = async () => {

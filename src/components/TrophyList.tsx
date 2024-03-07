@@ -16,7 +16,7 @@ const TrophyList: React.FC = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchTrophies();
+        fetchTrophies().then(() => null);
     }, [currentPage]);
 
     const fetchTrophies = async () => {

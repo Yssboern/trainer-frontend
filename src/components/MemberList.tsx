@@ -22,7 +22,7 @@ const MemberList: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchMembers();
+        fetchMembers().then(() => null);
     }, [currentPage]);
 
     const fetchMembers = async () => {

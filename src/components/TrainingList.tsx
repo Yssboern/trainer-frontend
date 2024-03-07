@@ -16,7 +16,7 @@ const TrainingList: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchTrainings();
+        fetchTrainings().then(() => null);
     }, [currentPage]);
 
     const fetchTrainings = async () => {

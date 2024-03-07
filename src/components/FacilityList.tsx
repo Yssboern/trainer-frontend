@@ -21,7 +21,7 @@ const FacilityList: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchFacilities();
+        fetchFacilities().then(() => null);
     }, [currentPage]);
 
     const fetchFacilities = async () => {

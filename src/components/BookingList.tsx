@@ -19,7 +19,7 @@ const BookingList: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchBookings();
+        fetchBookings().then(() => null);
     }, [currentPage]);
 
     const fetchBookings = async () => {
