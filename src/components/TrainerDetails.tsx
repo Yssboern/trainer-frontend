@@ -20,7 +20,7 @@ import TrophySelectionPopup from './TrophySelectionPopup';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddNoteField from "./AddNoteField";
 
-interface IdName {
+interface IdText {
     id: number;
     name: String;
 }
@@ -29,10 +29,10 @@ interface Trainer {
     id: number;
     firstname: string;
     surname: string;
-    facilities: IdName[];
-    skills: IdName[];
-    trophies: IdName[];
-    notes: IdName[];
+    facilities: IdText[];
+    skills: IdText[];
+    trophies: IdText[];
+    notes: IdText[];
 }
 
 interface TrainerSaveData {
@@ -42,7 +42,7 @@ interface TrainerSaveData {
     facilityIds: number[];
     specialisations: number[];
     trophies: number[];
-    notes: IdName[];
+    notes: IdText[];
 }
 
 const convertToTrainerSaveData = (trainer: Trainer): TrainerSaveData => {
@@ -93,7 +93,7 @@ const TrainerDetails: React.FC = () => {
         navigate('/trainers');
     };
 
-    const handleTrainingSelect = (training: IdName) => {
+    const handleTrainingSelect = (training: IdText) => {
         if (editedTrainer) {
             const updatedTrainer = {...editedTrainer};
             if (updatedTrainer && updatedTrainer.skills) {
@@ -109,7 +109,7 @@ const TrainerDetails: React.FC = () => {
         }
     };
 
-    const handleFacilitySelect = (facility: IdName) => {
+    const handleFacilitySelect = (facility: IdText) => {
         console.log(facility)
         if (editedTrainer) {
             const updatedTrainer = {...editedTrainer};
@@ -126,7 +126,7 @@ const TrainerDetails: React.FC = () => {
         }
     };
 
-    const handleTrophySelect = (trophy: IdName) => {
+    const handleTrophySelect = (trophy: IdText) => {
         if (editedTrainer) {
             const updatedTrainer = {...editedTrainer};
             if (updatedTrainer && updatedTrainer.trophies) {

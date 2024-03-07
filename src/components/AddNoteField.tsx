@@ -37,7 +37,7 @@ const AddNoteField: React.FC<AddNoteFieldProps> = ({
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({name: note})
+                body: JSON.stringify({text: note})
             });
 
             if (response.ok) {
