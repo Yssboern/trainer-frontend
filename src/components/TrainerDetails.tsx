@@ -164,7 +164,7 @@ const TrainerDetails: React.FC = () => {
     const handleNoteChange = (index: number, value: string) => {
         if (editedTrainer) {
             const updatedTrainer = {...editedTrainer};
-            updatedTrainer.notes[index].name = value; // Update the text of the note at the specified index
+            updatedTrainer.notes[index].name = value;
             setEditedTrainer(updatedTrainer);
         }
     };
@@ -172,8 +172,9 @@ const TrainerDetails: React.FC = () => {
     const handleRemoveNote = (index: number) => {
         if (editedTrainer) {
             const updatedTrainer = {...editedTrainer};
-            updatedTrainer.notes.splice(index, 1); // Remove the note at the specified index
+            updatedTrainer.notes.splice(index, 1);
             setEditedTrainer(updatedTrainer);
+            console.log(editedTrainer)
         }
     };
 
