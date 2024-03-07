@@ -22,7 +22,7 @@ import AddNoteField from "./AddNoteField";
 
 interface IdText {
     id: number;
-    name: String;
+    text: String;
 }
 
 interface Trainer {
@@ -164,7 +164,7 @@ const TrainerDetails: React.FC = () => {
     const handleNoteChange = (index: number, value: string) => {
         if (editedTrainer) {
             const updatedTrainer = {...editedTrainer};
-            updatedTrainer.notes[index].name = value;
+            updatedTrainer.notes[index].text = value;
             setEditedTrainer(updatedTrainer);
         }
     };
@@ -266,7 +266,7 @@ const TrainerDetails: React.FC = () => {
                     <ul>
                         {trainer.skills && trainer.skills.map(skill => (
                             <li key={skill.id} style={{display: 'flex', alignItems: 'center'}}>
-                                <span style={{marginRight: '8px'}}>• {skill.name} [id:{skill.id}]</span>
+                                <span style={{marginRight: '8px'}}>• {skill.text} [id:{skill.id}]</span>
                                 <IconButton aria-label="remove-skill" onClick={() => handleRemoveSkill(skill.id)}>
                                     <RemoveCircleOutlineIcon/>
                                 </IconButton>
@@ -291,7 +291,7 @@ const TrainerDetails: React.FC = () => {
                     <ul>
                         {trainer.facilities && trainer.facilities.map(facility => (
                             <li key={facility.id} style={{display: 'flex', alignItems: 'center'}}>
-                                <span style={{marginRight: '8px'}}>• {facility.name} [{facility.id}]</span>
+                                <span style={{marginRight: '8px'}}>• {facility.text} [{facility.id}]</span>
                             </li>
                         ))}
                     </ul>
@@ -313,7 +313,7 @@ const TrainerDetails: React.FC = () => {
                     <ul>
                         {trainer.trophies && trainer.trophies.map(trophy => (
                             <li key={trophy.id} style={{display: 'flex', alignItems: 'center'}}>
-                                <span style={{marginRight: '8px'}}>• {trophy.name} [{trophy.id}]</span>
+                                <span style={{marginRight: '8px'}}>• {trophy.text} [{trophy.id}]</span>
                             </li>
                         ))}
                     </ul>
@@ -343,7 +343,7 @@ const TrainerDetails: React.FC = () => {
                         {trainer.notes.map((note, index) => (
                             <li key={note.id}>
                                 <TextField
-                                    value={note.name}
+                                    value={note.text}
                                     onChange={(event) => handleNoteChange(index, event.target.value)}
                                     multiline
                                     fullWidth

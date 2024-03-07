@@ -11,19 +11,19 @@ import {
     ListItemText
 } from '@mui/material';
 
-interface Facility {
+interface IdText {
     id: number;
-    name: string;
+    text: string;
 }
 
 interface Props {
     open: boolean;
     onClose: () => void;
-    onFacilitySelect: (facility: Facility) => void;
+    onFacilitySelect: (facility: IdText) => void;
 }
 
 const FacilitySelectionPopup: React.FC<Props> = ({open, onClose, onFacilitySelect}) => {
-    const [facilities, setFacilities] = useState<Facility[]>([]);
+    const [facilities, setFacilities] = useState<IdText[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [totalPages, setTotalPages] = useState(1);
@@ -39,7 +39,7 @@ const FacilitySelectionPopup: React.FC<Props> = ({open, onClose, onFacilitySelec
             const response = await fetch(`http://localhost:8080/api/facilities?page=${currentPage}`);
             const data = await response.json();
 
-            const ff: Facility[] = data.content.map((f: { facid: number; name: string; }) => ({
+            const ff: IdText[] = data.content.map((f: { facid: number; name: string; }) => ({
                 id: f.facid,
                 name: f.name
             }));
@@ -70,7 +70,7 @@ const FacilitySelectionPopup: React.FC<Props> = ({open, onClose, onFacilitySelec
         setCurrentPage(currentPage + 1);
     };
 
-    const handleFacilitySelect = (facility: Facility) => {
+    const handleFacilitySelect = (facility: IdText) => {
         onFacilitySelect(facility);
         onClose();
     };
@@ -82,7 +82,7 @@ const FacilitySelectionPopup: React.FC<Props> = ({open, onClose, onFacilitySelec
                 <List>
                     {facilities.map(facility => (
                         <ListItemButton key={facility.id} onClick={() => handleFacilitySelect(facility)}>
-                            <ListItemText primary={facility.name}/>
+                            <ListItemText primary={facility.text}/>
                         </ListItemButton>
                     ))}
                 </List>

@@ -11,19 +11,19 @@ import {
     ListItemText
 } from '@mui/material';
 
-interface Training {
+interface IdText {
     id: number;
-    name: string;
+    text: string;
 }
 
 interface Props {
     open: boolean;
     onClose: () => void;
-    onTrainingSelect: (training: Training) => void;
+    onTrainingSelect: (training: IdText) => void;
 }
 
 const TrainingSelectionPopup: React.FC<Props> = ({open, onClose, onTrainingSelect}) => {
-    const [trainings, setTrainings] = useState<Training[]>([]);
+    const [trainings, setTrainings] = useState<IdText[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [totalPages, setTotalPages] = useState(1);
@@ -56,7 +56,7 @@ const TrainingSelectionPopup: React.FC<Props> = ({open, onClose, onTrainingSelec
         return <div>Error: {error}</div>;
     }
 
-    const handleTrainingSelect = (training: Training) => {
+    const handleTrainingSelect = (training: IdText) => {
         onTrainingSelect(training);
         onClose();
     };
@@ -76,7 +76,7 @@ const TrainingSelectionPopup: React.FC<Props> = ({open, onClose, onTrainingSelec
                 <List>
                     {trainings.map(training => (
                         <ListItemButton key={training.id} onClick={() => handleTrainingSelect(training)}>
-                            <ListItemText primary={training.name}/>
+                            <ListItemText primary={training.text}/>
                         </ListItemButton>
                     ))}
                 </List>

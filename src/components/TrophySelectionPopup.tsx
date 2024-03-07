@@ -10,19 +10,19 @@ import {
     ListItemText
 } from '@mui/material';
 
-interface Trophy {
+interface IdText {
     id: number;
-    name: string;
+    text: string;
 }
 
 interface Props {
     open: boolean;
     onClose: () => void;
-    onTrophySelect: (trophy: Trophy) => void;
+    onTrophySelect: (trophy: IdText) => void;
 }
 
 const TrophySelectionPopup: React.FC<Props> = ({ open, onClose, onTrophySelect }) => {
-    const [trophies, setTrophies] = useState<Trophy[]>([]);
+    const [trophies, setTrophies] = useState<IdText[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [totalPages, setTotalPages] = useState(1);
@@ -38,7 +38,7 @@ const TrophySelectionPopup: React.FC<Props> = ({ open, onClose, onTrophySelect }
             const response = await fetch(`http://localhost:8080/api/trophies?page=${currentPage}`);
             const data = await response.json();
 
-            const tt: Trophy[] = data.content.map((t: { id: number; name: string }) => ({
+            const tt: IdText[] = data.content.map((t: { id: number; name: string }) => ({
                 id: t.id,
                 name: t.name
             }));
@@ -60,7 +60,7 @@ const TrophySelectionPopup: React.FC<Props> = ({ open, onClose, onTrophySelect }
         setCurrentPage(currentPage + 1);
     };
 
-    const handleTrophySelect = (trophy: Trophy) => {
+    const handleTrophySelect = (trophy: IdText) => {
         onTrophySelect(trophy);
         onClose();
     };
@@ -80,7 +80,7 @@ const TrophySelectionPopup: React.FC<Props> = ({ open, onClose, onTrophySelect }
                 <List>
                     {trophies.map(trophy => (
                         <ListItemButton key={trophy.id} onClick={() => handleTrophySelect(trophy)}>
-                            <ListItemText primary={trophy.name} />
+                            <ListItemText primary={trophy.text} />
                         </ListItemButton>
                     ))}
                 </List>
