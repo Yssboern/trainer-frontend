@@ -30,10 +30,10 @@ const ItemSelectionPopup: React.FC<Props> = ({open, onClose, onItemSelect, title
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [totalPages, setTotalPages] = useState(1);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(0);
 
     useEffect(() => {
-        fetchItems();
+        fetchItems().then(() => null);
     }, [currentPage]);
 
     const fetchItems = async () => {
@@ -85,10 +85,10 @@ const ItemSelectionPopup: React.FC<Props> = ({open, onClose, onItemSelect, title
                 </List>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handlePrevPage} disabled={currentPage === 1}>
+                <Button onClick={handlePrevPage} disabled={currentPage === 0}>
                     Previous
                 </Button>
-                <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
+                <Button onClick={handleNextPage} disabled={currentPage === totalPages - 1}>
                     Next
                 </Button>
                 <Button onClick={onClose} color="primary">

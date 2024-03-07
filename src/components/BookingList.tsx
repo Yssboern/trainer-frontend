@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Container, Typography } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {Button, Container, Typography} from '@mui/material';
+import {Link, useNavigate} from 'react-router-dom';
 
 interface Booking {
     bookid: number;
@@ -10,13 +10,9 @@ interface Booking {
     slots: number;
 }
 
-interface Pageable {
-    pageNumber: number;
-}
-
 const BookingList: React.FC = () => {
     const [bookings, setBookings] = useState<Booking[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
 
@@ -52,8 +48,8 @@ const BookingList: React.FC = () => {
             ) : (
                 <ul>
                     {bookings.map(booking => (
-                        <li key={booking.bookid} style={{ display: 'flex', alignItems: 'center' }}>
-                            <span style={{ marginRight: '8px' }}>•</span>
+                        <li key={booking.bookid} style={{display: 'flex', alignItems: 'center'}}>
+                            <span style={{marginRight: '8px'}}>•</span>
                             <Button onClick={() => {
                                 navigate(`/booking/${booking.bookid}`)
                             }}>{booking.starttime}</Button>
@@ -62,9 +58,9 @@ const BookingList: React.FC = () => {
                 </ul>
             )}
             <div>
-                <Button onClick={prevPage} disabled={currentPage === 1}>Previous Page</Button>
+                <Button onClick={prevPage} disabled={currentPage === 0}>Previous Page</Button>
                 <span>Page: {currentPage}/{totalPages}</span>
-                <Button onClick={nextPage} disabled={currentPage === totalPages}>Next Page</Button>
+                <Button onClick={nextPage} disabled={currentPage === totalPages - 1}>Next Page</Button>
             </div>
         </Container>
     );

@@ -13,7 +13,7 @@ interface Trainer {
 
 const TrainerList: React.FC = () => {
     const [trainers, setTrainers] = useState<Trainer[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
 
@@ -61,9 +61,9 @@ const TrainerList: React.FC = () => {
                 </ul>
             )}
             <div>
-                <Button onClick={prevPage} disabled={currentPage === 1}>Previous Page</Button>
+                <Button onClick={prevPage} disabled={currentPage === 0}>Previous Page</Button>
                 <span>Page: {currentPage}/{totalPages}</span>
-                <Button onClick={nextPage} disabled={currentPage === totalPages}>Next Page</Button>
+                <Button onClick={nextPage} disabled={currentPage === totalPages - 1}>Next Page</Button>
             </div>
         </Container>
     );

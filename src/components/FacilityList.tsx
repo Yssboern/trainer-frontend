@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Container, Typography } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {Button, Container, Typography} from '@mui/material';
+import {Link, useNavigate} from 'react-router-dom';
 
 interface Facility {
     facid: number;
@@ -14,7 +14,7 @@ interface Facility {
 
 const FacilityList: React.FC = () => {
     const [facilities, setFacilities] = useState<Facility[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
 
@@ -50,8 +50,8 @@ const FacilityList: React.FC = () => {
             ) : (
                 <ul>
                     {facilities.map(facility => (
-                        <li key={facility.facid} style={{ display: 'flex', alignItems: 'center' }}>
-                            <span style={{ marginRight: '8px' }}>•</span>
+                        <li key={facility.facid} style={{display: 'flex', alignItems: 'center'}}>
+                            <span style={{marginRight: '8px'}}>•</span>
                             <Button onClick={() => {
                                 navigate(`/facility/${facility.facid}`)
                             }}>{facility.name}</Button>
@@ -60,9 +60,9 @@ const FacilityList: React.FC = () => {
                 </ul>
             )}
             <div>
-                <Button onClick={prevPage} disabled={currentPage === 1}>Previous Page</Button>
+                <Button onClick={prevPage} disabled={currentPage === 0}>Previous Page</Button>
                 <span>Page: {currentPage}/{totalPages}</span>
-                <Button onClick={nextPage} disabled={currentPage === totalPages}>Next Page</Button>
+                <Button onClick={nextPage} disabled={currentPage === totalPages - 1}>Next Page</Button>
             </div>
         </Container>
     );
