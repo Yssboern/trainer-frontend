@@ -38,11 +38,11 @@ const TrophySelectionPopup: React.FC<Props> = ({ open, onClose, onTrophySelect }
             const response = await fetch(`http://localhost:8080/api/trophies?page=${currentPage}`);
             const data = await response.json();
 
-            const tt: IdText[] = data.content.map((t: { id: number; name: string }) => ({
+            const items: IdText[] = data.content.map((t: { id: number; name: string }) => ({
                 id: t.id,
-                name: t.name
+                text: t.name
             }));
-            setTrophies(tt);
+            setTrophies(items);
             setTotalPages(data.totalPages);
             setLoading(false);
         } catch (error) {

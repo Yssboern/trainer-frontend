@@ -82,6 +82,7 @@ const TrainerDetails: React.FC = () => {
                 setTrainer(data);
                 setEditedTrainer(data);
                 setLoading(false);
+                console.log(data)
             } catch (error) {
                 console.error('Error fetching trainer details:', error);
             }
@@ -152,11 +153,18 @@ const TrainerDetails: React.FC = () => {
         setIsAddNoteVisible(!isAddNoteVisible)
     };
 
-
     const handleRemoveSkill = (skillId: number) => {
         if (editedTrainer) {
             const updatedTrainer = {...editedTrainer};
             updatedTrainer.skills = updatedTrainer.skills.filter(skill => skill.id !== skillId);
+            setEditedTrainer(updatedTrainer);
+        }
+    };
+
+    const handleRemoveFacility = (skillId: number) => {
+        if (editedTrainer) {
+            const updatedTrainer = {...editedTrainer};
+            updatedTrainer.facilities = updatedTrainer.facilities.filter(skill => skill.id !== skillId);
             setEditedTrainer(updatedTrainer);
         }
     };
@@ -292,6 +300,9 @@ const TrainerDetails: React.FC = () => {
                         {trainer.facilities && trainer.facilities.map(facility => (
                             <li key={facility.id} style={{display: 'flex', alignItems: 'center'}}>
                                 <span style={{marginRight: '8px'}}>• {facility.text} [{facility.id}]</span>
+                                <IconButton aria-label="remove-skill" onClick={() => handleRemoveFacility(facility.id)}>
+                                    <RemoveCircleOutlineIcon/>
+                                </IconButton>
                             </li>
                         ))}
                     </ul>

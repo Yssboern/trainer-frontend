@@ -38,9 +38,15 @@ const TrainingSelectionPopup: React.FC<Props> = ({open, onClose, onTrainingSelec
         try {
             const response = await fetch(`http://localhost:8080/api/trainings?page=${currentPage}`);
             const data = await response.json();
-            setTrainings(data.content);
+
+            const items: IdText[] = data.content.map((f: { id: number; name: string; }) => ({
+                id: f.id,
+                text: f.name
+            }));
+            setTrainings(items);
             setTotalPages(data.totalPages);
             setLoading(false);
+            console.log(data.content)
         } catch (error) {
             console.error('Error fetching trainings:', error);
             setError('Failed to fetch trainings');

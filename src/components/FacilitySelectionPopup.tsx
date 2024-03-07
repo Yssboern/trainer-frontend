@@ -39,11 +39,11 @@ const FacilitySelectionPopup: React.FC<Props> = ({open, onClose, onFacilitySelec
             const response = await fetch(`http://localhost:8080/api/facilities?page=${currentPage}`);
             const data = await response.json();
 
-            const ff: IdText[] = data.content.map((f: { facid: number; name: string; }) => ({
+            const facilities: IdText[] = data.content.map((f: { facid: number; name: string; }) => ({
                 id: f.facid,
-                name: f.name
+                text: f.name
             }));
-            setFacilities(ff);
+            setFacilities(facilities);
             setTotalPages(data.totalPages);
             setLoading(false);
             console.log(data)
