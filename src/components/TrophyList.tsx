@@ -9,10 +9,6 @@ interface Trophy {
     year: number;
 }
 
-interface Pageable {
-    pageNumber: number;
-}
-
 const TrophyList: React.FC = () => {
     const [trophies, setTrophies] = useState<Trophy[]>([]);
     const [currentPage, setCurrentPage] = useState(1);

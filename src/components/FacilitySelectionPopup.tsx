@@ -75,8 +75,6 @@ const FacilitySelectionPopup: React.FC<Props> = ({open, onClose, onFacilitySelec
         onClose();
     };
 
-    // console.log("facilities");
-    // console.log(facilities);
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogTitle>Select Facility</DialogTitle>

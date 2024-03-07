@@ -69,8 +69,6 @@ const TrainingSelectionPopup: React.FC<Props> = ({open, onClose, onTrainingSelec
         setCurrentPage(currentPage + 1);
     };
 
-    // console.log("trainings: ");
-    // console.log(trainings);
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogTitle>Select Training</DialogTitle>

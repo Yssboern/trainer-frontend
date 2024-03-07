@@ -12,10 +12,6 @@ interface Facility {
     trainerIds: number[];
 }
 
-interface Pageable {
-    pageNumber: number;
-}
-
 const FacilityList: React.FC = () => {
     const [facilities, setFacilities] = useState<Facility[]>([]);
     const [currentPage, setCurrentPage] = useState(1);

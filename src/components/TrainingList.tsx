@@ -7,10 +7,6 @@ interface Training {
     name: string;
 }
 
-interface Pageable {
-    pageNumber: number;
-}
-
 const TrainingList: React.FC = () => {
     const [trainings, setTrainings] = useState<Training[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
