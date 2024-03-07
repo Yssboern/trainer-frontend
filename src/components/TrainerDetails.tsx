@@ -11,12 +11,10 @@ import {
     Typography
 } from '@mui/material';
 import {useNavigate, useParams} from 'react-router-dom';
-import TrainingSelectionPopup from './TrainingSelectionPopup';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
-import FacilitySelectionPopup from "./FacilitySelectionPopup";
-import TrophySelectionPopup from './TrophySelectionPopup';
+import ItemSelectionPopup from './ItemSelectionPopup';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddNoteField from "./AddNoteField";
 
@@ -381,20 +379,29 @@ const TrainerDetails: React.FC = () => {
             <Button variant="contained" color="primary" onClick={() => setIsTrophyPopupOpen(true)}>Add Trophy</Button>
             <Button variant="contained" color="primary" onClick={handleSave}>Save</Button>
 
-            <TrainingSelectionPopup
+            <ItemSelectionPopup
                 open={isTrainingPopupOpen}
                 onClose={() => setIsTrainingPopupOpen(false)}
-                onTrainingSelect={handleTrainingSelect}/>
+                onItemSelect={handleTrainingSelect}
+                title={'Training selection'}
+                url={'http://localhost:8080/api/trainings/selection'}
+            />
 
-            <FacilitySelectionPopup
+            <ItemSelectionPopup
                 open={isFacilityPopupOpen}
                 onClose={() => setIsFacilityPopupOpen(false)}
-                onFacilitySelect={handleFacilitySelect}/>
+                onItemSelect={handleFacilitySelect}
+                title={'Facility selection'}
+                url={'http://localhost:8080/api/facilities/selection'}
+            />
 
-            <TrophySelectionPopup
+            <ItemSelectionPopup
                 open={isTrophyPopupOpen}
                 onClose={() => setIsTrophyPopupOpen(false)}
-                onTrophySelect={handleTrophySelect}/>
+                onItemSelect={handleTrophySelect}
+                title={'Trophy selection'}
+                url={'http://localhost:8080/api/trophies/selection'}
+            />
 
         </Container>
     );

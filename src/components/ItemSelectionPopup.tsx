@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+// ItemSelectionPopup.tsx
+import React, {useEffect, useState} from 'react';
 import {
     Button,
     Dialog,
@@ -18,36 +19,33 @@ interface IdText {
 interface Props {
     open: boolean;
     onClose: () => void;
-    onTrophySelect: (trophy: IdText) => void;
+    onItemSelect: (item: IdText) => void;
+    title: string; // title of selection window
+    url: string;
 }
 
-const TrophySelectionPopup: React.FC<Props> = ({ open, onClose, onTrophySelect }) => {
-    const [trophies, setTrophies] = useState<IdText[]>([]);
+const ItemSelectionPopup: React.FC<Props> = ({open, onClose, onItemSelect, title, url}) => {
+    const [items, setItems] = useState<IdText[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
-        fetchTrophies();
+        fetchItems();
     }, [currentPage]);
 
-    const fetchTrophies = async () => {
+    const fetchItems = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/api/trophies?page=${currentPage}`);
+            const response = await fetch(`${url}?page=${currentPage}`);
             const data = await response.json();
-
-            const items: IdText[] = data.content.map((t: { id: number; name: string }) => ({
-                id: t.id,
-                text: t.name
-            }));
-            setTrophies(items);
+            setItems(data.content);
             setTotalPages(data.totalPages);
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching trophies:', error);
-            setError('Failed to fetch trophies');
+            console.error('Error fetching: ', error);
+            setError('Failed to fetch');
             setLoading(false);
         }
     };
@@ -60,8 +58,8 @@ const TrophySelectionPopup: React.FC<Props> = ({ open, onClose, onTrophySelect }
         setCurrentPage(currentPage + 1);
     };
 
-    const handleTrophySelect = (trophy: IdText) => {
-        onTrophySelect(trophy);
+    const handleItemSelect = (item: IdText) => {
+        onItemSelect(item);
         onClose();
     };
 
@@ -75,12 +73,12 @@ const TrophySelectionPopup: React.FC<Props> = ({ open, onClose, onTrophySelect }
 
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogTitle>Select Trophy</DialogTitle>
+            <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <List>
-                    {trophies.map(trophy => (
-                        <ListItemButton key={trophy.id} onClick={() => handleTrophySelect(trophy)}>
-                            <ListItemText primary={trophy.text} />
+                    {items.map(item => (
+                        <ListItemButton key={`${title}+${item.id}`} onClick={() => handleItemSelect(item)}>
+                            <ListItemText primary={item.text}/>
                         </ListItemButton>
                     ))}
                 </List>
@@ -100,4 +98,4 @@ const TrophySelectionPopup: React.FC<Props> = ({ open, onClose, onTrophySelect }
     );
 };
 
-export default TrophySelectionPopup;
+export default ItemSelectionPopup;
