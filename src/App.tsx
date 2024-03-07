@@ -39,11 +39,11 @@ const App: React.FC = () => {
                         <ListItemButton component="a" href="/trainers">
                             <ListItemText primary="Home"/>
                         </ListItemButton>
-                        <ListItemButton component="a" href="/facilities">
-                            <ListItemText primary="View Facility List"/>
-                        </ListItemButton>
                         <ListItemButton component="a" href="/trainers">
                             <ListItemText primary="View Trainer List"/>
+                        </ListItemButton>
+                        <ListItemButton component="a" href="/facilities">
+                            <ListItemText primary="View Facility List"/>
                         </ListItemButton>
                         <ListItemButton component="a" href="/members">
                             <ListItemText primary="View Members List"/>
@@ -65,6 +65,7 @@ const App: React.FC = () => {
                         </ListItemButton>
                     </List>
                 </Drawer>
+
                 <Routes>
                     <Route path="/" element={<HomePage/>}/>
                     <Route path="/trainers" element={<TrainerList/>}/>
@@ -80,6 +81,7 @@ const App: React.FC = () => {
                     <Route path="/mark-console" element={<MarkConsole/>}/>
                 </Routes>
             </Router>
+
         </ThemeProvider>
     );
 };

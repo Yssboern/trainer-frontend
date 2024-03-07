@@ -22,9 +22,10 @@ interface Props {
     onItemSelect: (item: IdText) => void;
     title: string; // title of selection window
     url: string;
+    pageSize?: number;
 }
 
-const ItemSelectionPopup: React.FC<Props> = ({open, onClose, onItemSelect, title, url}) => {
+const ItemSelectionPopup: React.FC<Props> = ({open, onClose, onItemSelect, title, url, pageSize = 7}) => {
     const [items, setItems] = useState<IdText[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -38,7 +39,7 @@ const ItemSelectionPopup: React.FC<Props> = ({open, onClose, onItemSelect, title
     const fetchItems = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${url}?page=${currentPage}`);
+            const response = await fetch(`${url}?page=${currentPage}&size=${pageSize}`);
             const data = await response.json();
             setItems(data.content);
             setTotalPages(data.totalPages);
