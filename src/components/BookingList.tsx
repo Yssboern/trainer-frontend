@@ -1,3 +1,4 @@
+//BookingList.tsx
 import React, {useEffect, useState} from 'react';
 import {Button, Container, Typography} from '@mui/material';
 import {Link, useNavigate} from 'react-router-dom';
@@ -18,10 +19,6 @@ const BookingList: React.FC = () => {
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        fetchBookings().then(() => null);
-    }, [currentPage]);
-
     const fetchBookings = async () => {
         try {
             const response = await fetch(`http://localhost:8080/api/bookings?page=${currentPage}`);
@@ -33,6 +30,10 @@ const BookingList: React.FC = () => {
             console.error('Error fetching bookings:', error);
         }
     };
+
+    useEffect(() => {
+        fetchBookings().then(() => null);
+    }, [currentPage]);
 
     const nextPage = () => setCurrentPage(currentPage + 1);
     const prevPage = () => setCurrentPage(currentPage - 1);
